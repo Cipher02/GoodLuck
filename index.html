@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>For Carrots 🩵</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; min-height: 100%; overflow-x: hidden; }
+
+    body {
+      font-family: 'Segoe UI', 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(160deg, #fff3e8 0%, #ffd6e8 55%, #e8d6ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px 48px;
+    }
+
+    #hearts-bg {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .heart-float {
+      position: absolute; bottom: -60px;
+      animation: floatUp linear infinite; opacity: 0; user-select: none;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+      10%  { opacity: 0.5; }
+      85%  { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-110vh) scale(1.1); }
+    }
+
+    .wrap {
+      width: 100%; max-width: 400px;
+      position: relative; z-index: 1;
+      animation: entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes entrance {
+      from { opacity: 0; transform: scale(0.85) translateY(24px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .card {
+      background: rgba(255, 252, 248, 0.95);
+      border-radius: 28px;
+      padding: 28px 22px 32px;
+      border: 2px solid rgba(232, 121, 58, 0.2);
+      box-shadow: 0 8px 36px rgba(139, 107, 191, 0.1);
+      text-align: center;
+    }
+
+    .photo-frame {
+      width: min(220px, 64vw);
+      height: min(220px, 64vw);
+      border-radius: 24px;
+      border: 4px solid #e8793a;
+      overflow: hidden;
+      box-shadow: 0 6px 22px rgba(232, 121, 58, 0.25);
+      animation: bounce 2.6s ease-in-out infinite;
+      margin: 0 auto 24px;
+      background: #ffe4cc;
+    }
+    .photo-frame img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top; display: block;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0) rotate(-1deg); }
+      50%      { transform: translateY(-9px) rotate(1deg); }
+    }
+
+    /* ── tag ── */
+    .tag {
+      display: inline-block;
+      font-size: 13px; color: #c05a10; font-weight: 700;
+      letter-spacing: 0.5px; margin-bottom: 12px;
+      background: #fff0e0; border: 1.5px solid #f0c090;
+      border-radius: 20px; padding: 5px 16px;
+    }
+
+    /* ── button ── */
+    .reveal-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 30px;
+      background: linear-gradient(135deg, #7ec8e3, #4a9fbf);
+      color: white; font-size: 16px; font-weight: 700;
+      border: none; border-radius: 50px; cursor: pointer;
+      font-family: inherit; letter-spacing: 0.3px;
+      box-shadow: 0 4px 18px rgba(74, 159, 191, 0.38);
+      transition: transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      animation: btnPulse 2.2s ease-in-out infinite;
+    }
+    .reveal-btn:active { transform: scale(0.96); }
+    @keyframes btnPulse {
+      0%,100% { box-shadow: 0 4px 18px rgba(74,159,191,0.38); }
+      50%      { box-shadow: 0 4px 28px rgba(74,159,191,0.6); }
+    }
+
+    /* ── envelope ── */
+    #envelope-wrap {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .envelope {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+      height: 200px;
+      cursor: pointer;
+    }
+
+    /* envelope body */
+    .env-body {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 75%;
+      background: #fde8d0;
+      border-radius: 0 0 16px 16px;
+      border: 2px solid #e8b890;
+      border-top: none;
+      overflow: hidden;
+    }
+
+    /* V flaps on body */
+    .env-body::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 0 75px 160px;
+      border-color: transparent transparent #f5d4b0 transparent;
+    }
+    .env-body::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 75px 160px 0 0;
+      border-color: #f5d4b0 transparent transparent transparent;
+    }
+
+    /* envelope flap (lid) */
+    .env-flap {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 55%;
+      transform-origin: top center;
+      transform-style: preserve-3d;
+      z-index: 10;
+    }
+
+    /* flap visible triangle */
+    .env-flap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 160px 110px 160px;
+      border-color: transparent transparent #fcd4a8 transparent;
+      filter: drop-shadow(0 2px 4px rgba(200,120,60,0.15));
+    }
+
+    /* flap outline border */
+    .env-flap::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -1px;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 161px 112px 161px;
+      border-color: transparent transparent #e8b890 transparent;
+      z-index: -1;
+    }
+
+    /* flap open animation */
+    .env-flap.open {
+      animation: openFlap 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes openFlap {
+      0%   { transform: rotateX(0deg); }
+      100% { transform: rotateX(-180deg); }
+    }
+
+    /* letter sliding out */
+    .env-letter {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 82%;
+      background: white;
+      border-radius: 10px 10px 6px 6px;
+      border: 1px solid #e0d8d0;
+      padding: 10px 12px 8px;
+      font-size: 11px;
+      color: #aaa;
+      text-align: center;
+      z-index: 5;
+      opacity: 0;
+    }
+    .env-letter.slide-out {
+      animation: slideOut 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards;
+    }
+    @keyframes slideOut {
+      0%   { opacity: 0; bottom: 10px; }
+      30%  { opacity: 1; }
+      100% { opacity: 1; bottom: 130px; }
+    }
+
+    /* seal */
+    .env-seal {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px; height: 36px;
+      background: #e8793a;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(232,121,58,0.4);
+      z-index: 20;
+      transition: opacity 0.3s;
+    }
+
+    .envelope-hint {
+      font-size: 12px; color: #b07050;
+      margin-top: 10px; font-weight: 600;
+      animation: blink2 1.5s ease-in-out infinite;
+    }
+    @keyframes blink2 {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.4; }
+    }
+
+    /* ── message letter ── */
+    .message {
+      display: none;
+      text-align: left;
+      margin-top: 20px;
+    }
+    .message.show {
+      display: block;
+      animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .msg-bubble {
+      background: #f0f7ff;
+      border: 1.5px solid #b8d8ea;
+      border-radius: 20px;
+      padding: 20px 18px;
+    }
+    .msg-text { font-size: 15px; color: #1a1a1a; line-height: 1.85; }
+    .msg-text p { margin-bottom: 13px; }
+    .msg-text p:last-child { margin-bottom: 0; }
+    .msg-sig {
+      margin-top: 16px; padding-top: 14px;
+      border-top: 1px solid #b8d8ea;
+      font-size: 14px; font-weight: 700;
+      color: #2a5a7a; text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hearts-bg"></div>
+
+  <div class="wrap">
+    <div class="card">
+
+      <div class="photo-frame">
+        <img
+          src="https://static.gwvkyk.com/media/b1be0f5335e96eee586e0.png"
+          alt="Nick and Judy"
+          onerror="this.parentElement.innerHTML='<div style=font-size:52px;display:flex;align-items:center;justify-content:center;height:100%>🦊🐰</div>'"
+        />
+      </div>
+
+      <div class="tag">a note for Carrots</div><br>
+
+      <button class="reveal-btn" id="reveal-btn" onclick="startEnvelope()">
+        💙 for Carrots
+      </button>
+
+      <!-- envelope animation -->
+      <div id="envelope-wrap">
+        <div class="envelope" id="envelope" onclick="openEnvelope()">
+          <div class="env-body"></div>
+          <div class="env-flap" id="env-flap"></div>
+          <div class="env-letter" id="env-letter">✦ &nbsp; for Carrots &nbsp; ✦</div>
+          <div class="env-seal" id="env-seal">🥕</div>
+        </div>
+        <p class="envelope-hint" id="env-hint">tap to open 💙</p>
+      </div>
+
+      <!-- letter -->
+      <div class="message" id="message">
+        <div class="msg-bubble">
+          <div class="msg-text">
+            <p>You've been putting in the effort, even on the tough days… and that already says a lot.</p>
+            <p>Just go in, take it one question at a time, and do your best.</p>
+            <p>No pressure, no overthinking… just focus and do your thing.</p>
+            <p>You've got this 💪</p>
+            <p>Good luck Carrot 🩵</p>
+          </div>
+          <div class="msg-sig">— Squishy 🦊🤎</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function startEnvelope() {
+      document.getElementById('reveal-btn').style.display = 'none';
+      const wrap = document.getElementById('envelope-wrap');
+      wrap.style.display = 'block';
+      wrap.style.animation = 'entrance 0.5s cubic-bezier(0.34,1.56,0.64,1) both';
+    }
+
+    let opened = false;
+    function openEnvelope() {
+      if (opened) return;
+      opened = true;
+
+      document.getElementById('env-hint').style.display = 'none';
+      document.getElementById('env-seal').style.opacity = '0';
+
+      const flap = document.getElementById('env-flap');
+      const letter = document.getElementById('env-letter');
+      flap.classList.add('open');
+      letter.classList.add('slide-out');
+
+      setTimeout(() => {
+        document.getElementById('envelope-wrap').style.display = 'none';
+        document.getElementById('message').classList.add('show');
+      }, 1500);
+    }
+
+    /* floating hearts */
+    const bg = document.getElementById('hearts-bg');
+    const emojis = ['🥕','🐰','🤎','⭐','💙','🦊','✨'];
+    function spawn() {
+      const h = document.createElement('div');
+      h.className = 'heart-float';
+      h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.fontSize = (12 + Math.random() * 14) + 'px';
+      const dur = 7 + Math.random() * 7;
+      h.style.animationDuration = dur + 's';
+      h.style.animationDelay = (Math.random() * 3) + 's';
+      bg.appendChild(h);
+      setTimeout(() => h.remove(), (dur + 3) * 1000);
+    }
+    setInterval(spawn, 800);
+    for (let i = 0; i < 6; i++) spawn();
+  </script>
+
+</body>
+</html>
